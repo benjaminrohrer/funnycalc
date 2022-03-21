@@ -12,19 +12,15 @@ PreCalc.prototype.calc = function(jsonString) {
 	let exp = JSON.parse(jsonString);
 
 	if (exp.op === "add"){
-		console.log("add operation found");
 		if ("expr" in exp) {
-			console.log("expr found");
 			this.value = this.calc(JSON.stringify(exp.expr));
 			this.result = this.result + this.value;
 		} else if ("number" in exp){
-			this.result = this.result + exp.number;
+			this.result = this.calcStack[0] + exp.number;
 		}
 	}
 	if (exp.op === "subtract"){
-		console.log("subtract operation found");
 		if ("expr" in exp) {
-			console.log("expr found");
 			this.value = this.calc(JSON.stringify(exp.expr));
 			this.result = this.result - this.value;
 		} else if ("number" in exp){
@@ -32,20 +28,18 @@ PreCalc.prototype.calc = function(jsonString) {
 		}
 	}
 	if (exp.op === "push") {
-		console.log("push found");
 		if ("expr" in exp) {
-			this.calc(JSON.stringify(exp.expr));
-			this.printStack();
+			this.calcStack.unshift(this.calc(JSON.stringify(exp.expr)));
 		} else if ("number" in exp) {
 			this.calcStack.unshift(exp.number);
-			this.printStack();
 			return exp.number;
 		}
 	}
 	if (exp.op === "pop") {
-		console.log("pop found");
 		this.result = this.calcStack.shift();
-		this.printStack();
+	}
+	if (exp.op === "print") {
+		return this.printStack();
 	}
 
 	return this.result;
@@ -57,7 +51,7 @@ PreCalc.prototype.printStack = function() {
 		output = output + this.calcStack[i] + " ";
 	}
 	output = output + "]";
-	console.log(output);
+	return output;
 }
 // exec function
 function exec(array) {
